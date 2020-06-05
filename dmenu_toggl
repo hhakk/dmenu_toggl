@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Fill Toggl entry (current day) with dmenu and cURL
+# Fill Toggl entries with dmenu and cURL
 
 API_KEY="<API-KEY>"
 
@@ -33,17 +33,16 @@ get_dur () {
 }
 
 get_time () {
-
+	chosen_date=$(seq -w 0 13 | xargs -i date -d "-{}day" +%Y-%m-%d | dmenu -i -l 14 -p "Set day:")
 	chosen_hour=$(seq -w 0 23 | dmenu -i -l 10 -p "Set hour:")
 	chosen_minute=$(seq -w 0 59 | dmenu -i -l 10 -p "Set minute:")
-	echo "$chosen_hour:$chosen_minute"
+	echo $chosen_date"T"$chosen_hour":"$chosen_minute":00+03:00"
 }
 
 PID=$(get_pid)
 DESC=$(get_desc)
-START=$(get_time)
+TIME=$(get_time)
 DUR=$(get_dur)
-TIME="$(date "+%Y-%m-%d")T$START:00+03:00"
 
 # echo your entry
 
@@ -54,7 +53,7 @@ TIME_START: $TIME
 TIME_DURATION: $DUR
 "
 
-curl -v -u $API_KEY:api_token \
-	-H "Content-Type: application/json" \
- 	-d "{\"time_entry\":{\"description\":\"$DESC\",\"duration\":\"$DUR\",\"start\":\"$TIME\",\"pid\":$PID,\"created_with\":\"curl\"}}" \
- 	-X POST https://www.toggl.com/api/v8/time_entries
+# curl -v -u $API_KEY:api_token \
+# 	-H "Content-Type: application/json" \
+#  	-d "{\"time_entry\":{\"description\":\"$DESC\",\"duration\":\"$DUR\",\"start\":\"$TIME\",\"pid\":$PID,\"created_with\":\"curl\"}}" \
+#  	-X POST https://www.toggl.com/api/v8/time_entries

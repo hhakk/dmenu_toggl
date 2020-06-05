@@ -3,7 +3,7 @@
 Fill time-entries to Toggl time tracker with `dmenu` and `cURL`.
 
 
-The script prompts you for a project, description, start time (currently for today) and the duration of your task.
+The script prompts you for a project, description, start time and the duration of your task.
 
 ## Before you use the script
 
