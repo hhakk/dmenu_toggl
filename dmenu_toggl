@@ -53,7 +53,7 @@ TIME_START: $TIME
 TIME_DURATION: $DUR
 "
 
-# curl -v -u $API_KEY:api_token \
-# 	-H "Content-Type: application/json" \
-#  	-d "{\"time_entry\":{\"description\":\"$DESC\",\"duration\":\"$DUR\",\"start\":\"$TIME\",\"pid\":$PID,\"created_with\":\"curl\"}}" \
-#  	-X POST https://www.toggl.com/api/v8/time_entries
+curl -v -u $API_KEY:api_token \
+ 	-H "Content-Type: application/json" \
+  	-d "{\"time_entry\":{\"description\":\"$DESC\",\"duration\":\"$DUR\",\"start\":\"$TIME\",\"pid\":$PID,\"created_with\":\"curl\"}}" \
+  	-X POST https://www.toggl.com/api/v8/time_entries
