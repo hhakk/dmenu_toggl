@@ -1,0 +1,60 @@
+#!/usr/bin/env sh
+
+# Fill Toggl entry (current day) with dmenu and cURL
+
+API_KEY="<API-KEY>"
+
+# Below lines could be stored in separate CSV, here only to keep this in one file
+
+PROJECTS="<PROJECT1-NAME>,<PROJECT1-ID>\\n<PROJECT2-NAME>,<PROJECT2-ID>"
+
+# Works if you have somewhat constant descriptions
+
+DESCRIPTIONS="<DESCRIPTION1>\\n<DESCRIPTION2>"
+
+get_pid() {
+
+	chosen_project=$(printf "$PROJECTS"| cut -f1 -d, | dmenu -i -l 10 -p "Choose a project:")
+	chosen_pid=$(printf $PROJECTS | awk -v chosen="$chosen_project" -F , '$1==chosen { print $2}')
+	echo $chosen_pid
+
+}
+
+get_desc () {
+
+	chosen_desc=$(printf "$DESCRIPTIONS" | dmenu -i -l 10 -p "Choose a description:")
+	echo $chosen_desc
+}
+
+get_dur () {
+
+	chosen_dur=$(seq 1 10 | dmenu -i -l 10 -p "Choose a duration (hours):")
+	echo $(( $chosen_dur * 60 * 60 ))
+}
+
+get_time () {
+
+	chosen_hour=$(seq -w 0 23 | dmenu -i -l 10 -p "Set hour:")
+	chosen_minute=$(seq -w 0 59 | dmenu -i -l 10 -p "Set minute:")
+	echo "$chosen_hour:$chosen_minute"
+}
+
+PID=$(get_pid)
+DESC=$(get_desc)
+START=$(get_time)
+DUR=$(get_dur)
+TIME="$(date "+%Y-%m-%d")T$START:00+03:00"
+
+# echo your entry
+
+echo "
+PROJECT ID: $PID
+DESCRIPTION: $DESC
+TIME_START: $TIME
+TIME_DURATION: $DUR
+"
+
+curl -v -u $API_KEY:api_token \
+	-H "Content-Type: application/json" \
+ 	-d "{\"time_entry\":{\"description\":\"$DESC\",\"duration\":\"$DUR\",\"start\":\"$TIME\",\"pid\":$PID,\"created_with\":\"curl\"}}" \
+ 	-X POST https://www.toggl.com/api/v8/time_entries
